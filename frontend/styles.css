@@ -1,0 +1,77 @@
+/* Paleta de cores */
+:root {
+
+    --color-1: #11091a; /* Cor de fundo */
+    --color-2: #1d192d; /* Cor do cabeçalho */
+    --color-3: #2a263f; /* Cor de fundo dos cartazes */
+    --color-4: #2f2f4d; /* Cor de fundo dos títulos dos filmes */
+    --color-5: #4a4f5a; /* Cor da borda inferior das imagens */
+    --color-6: #767a81; /* Cores adicionais */
+    --color-7: #bab195; /* Cor do texto */
+    
+}
+
+/* Estilização geral */
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--color-1);
+    color: var(--color-7);
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--color-2);
+    color: var(--color-7);
+}
+
+#filmes-lista {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+/* Estilização dos cartazes dos filmes */
+.filme {
+    background-color: var(--color-3);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    margin: 10px;
+    width: 150px; /* Largura fixa para os cartazes */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filme:hover {
+    transform: scale(1.05); /* Expande levemente ao passar o mouse */
+}
+
+.filme img {
+    width: 80%;
+    height: 500px; /* Altura fixa das imagens */
+    object-fit: cover; /* Faz a imagem preencher o cartaz sem distorção */
+    border-bottom: 2px solid var(--color-5);
+}
+
+.filme h2 {
+    padding: 10px;
+    text-align: center;
+    background-color: var(--color-4);
+    color: var(--color-7);
+}
+
+/* Ajusta a largura das colunas para telas menores */
+@media (max-width: 768px) {
+    .filme {
+        width: 45%;
+    }
+}
+
+@media (max-width: 480px) {
+    .filme {
+        width: 100%;
+    }
+}
