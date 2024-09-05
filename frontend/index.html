@@ -1,33 +1,110 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Filmes</title>
-    <link rel="stylesheet" href="styles.css?v=1.0">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Filmes Disponíveis</h1>
+    <div>
+        <h2>Adicionar Filme</h2>
+        <form id="filmeForm">
+            <input type="text" id="titulo" placeholder="Título do filme" required>
+            <input type="url" id="imagem" placeholder="Link da imagem" required>
+            <input type="url" id="link" placeholder="Link do IMDB" required>
+            <button type="submit">Adicionar Filme</button>
+        </form>
+    </div>
+
     <div id="filmes-lista"></div>
 
     <script>
-        fetch('http://localhost:3000/api/filmes')
-            .then(response => response.json())
-            .then(filmes => {
-                const listaFilmes = document.getElementById('filmes-lista');
-                filmes.forEach(filme => {
-                    const filmeDiv = document.createElement('div');
-                    filmeDiv.className = 'filme';
-                    filmeDiv.innerHTML = `
-                        <h2>${filme.titulo}</h2>
-                        <a href="${filme.link}" target="_blank">
-                            <img src="${filme.imagem}" alt="${filme.titulo}">
-                        </a>
-                    `;
-                    listaFilmes.appendChild(filmeDiv);
-                });
+        const loadFilmes = () => {
+            fetch('http://localhost:3000/api/filmes')
+                .then(response => response.json())
+                .then(filmes => {
+                    const listaFilmes = document.getElementById('filmes-lista');
+                    listaFilmes.innerHTML = ''; 
+                    filmes.forEach(filme => {
+                        const filmeDiv = document.createElement('div');
+                        filmeDiv.className = 'filme';
+                        filmeDiv.innerHTML = `
+                            <h2>${filme.titulo}</h2>
+                            <a href="${filme.link}" target="_blank">
+                                <img src="${filme.imagem}" alt="${filme.titulo}">
+                            </a>
+                            <button onclick="deleteFilme(${filme.id})">Remover</button>
+                        `;
+                        listaFilmes.appendChild(filmeDiv);
+                    });
+                })
+                .catch(error => console.error('Erro ao buscar filmes:', error));
+        };
+    
+        
+        document.getElementById('filmeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const titulo = document.getElementById('titulo').value;
+            const imagem = document.getElementById('imagem').value;
+            const link = document.getElementById('link').value;
+    
+            fetch('http://localhost:3000/api/filmes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titulo, imagem, link })
             })
-            .catch(error => console.error('Erro ao buscar filmes:', error));
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                
+                document.getElementById('titulo').value = '';
+                document.getElementById('imagem').value = '';
+                document.getElementById('link').value = '';
+                loadFilmes();
+            })
+            .catch(error => console.error('Erro ao adicionar filme:', error));
+        });
+    
+        
+        const editFilme = (id) => {
+            const titulo = prompt("Novo título:");
+            const imagem = prompt("Novo link da imagem:");
+            const link = prompt("Novo link do IMDB:");
+    
+            if (titulo && imagem && link) {
+                fetch(`http://localhost:3000/api/filmes/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ titulo, imagem, link })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    loadFilmes(); 
+                })
+                .catch(error => console.error('Erro ao editar filme:', error));
+            }
+        };
+    
+        
+        const deleteFilme = (id) => {
+            if (confirm("Tem certeza que deseja remover este filme?")) {
+                fetch(`http://localhost:3000/api/filmes/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    loadFilmes();
+                })
+                .catch(error => console.error('Erro ao remover filme:', error));
+            }
+        };
+    
+        loadFilmes();
     </script>
+    
 </body>
 </html>
